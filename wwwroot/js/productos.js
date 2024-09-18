@@ -32,6 +32,7 @@ function MostrarProductos(data) {
         let tdPrecioCompra = document.createTextNode(element.precioCompra);
         td4.appendChild(tdPrecioCompra);
 
+//BOTONES PARA EDITAR Y BORRAR
         let btnEditar = document.createElement('button');
         btnEditar.innerText = 'Modificar';
         btnEditar.setAttribute('class', 'btn btn-info');
@@ -88,7 +89,7 @@ function CrearProducto() {
     )
     .then(response => response.json())
     .then(data =>{
-        // if(data.status == undefined){
+        if(data.status == undefined){
             document.getElementById("Nombre").value = "";
             document.getElementById("Cantidad").value = 0;
             document.getElementById("PrecioVenta").value = 0;
@@ -96,9 +97,9 @@ function CrearProducto() {
 
             $('#modalAgregarProductos').modal('hide');
             ObtenerProductos();
-        // } else {
-        //     mensajesError('#error', data);
-        // }
+        } else {
+            mensajesError('#error', data);
+        }
             
     })
     .catch(error => console.log("Hubo un error al guardar el Producto nuevo, verifique el mensaje de error: ", error))
