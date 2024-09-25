@@ -68,7 +68,22 @@ function MostrarClientes(data) {
 function CrearCliente() {
     var nombreCliente = document.getElementById("Nombre").value;
     if (nombreCliente == "" || nombreCliente == null) {
-        return mensajesError('#error', null, "Por favor ingrese un Nombre para el Producto.");
+        return mensajesError('#error', null, "Por favor ingrese un Nombre para el Cliente.");
+    }
+
+    var apellidoCliente = document.getElementById("Apellido").value;
+    if (apellidoCliente == "" || apellidoCliente == null) {
+        return mensajesError('#error', null, "Por favor ingrese un Apellido para el Cliente.");
+    }
+
+    var dniCliente = document.getElementById("Dni").value;
+    if (dniCliente == "" || dniCliente == null) {
+        return mensajesError('#error', null, "Por favor ingrese un DNI para el Cliente.");
+    }
+
+    var saldoCliente = document.getElementById("Saldo").value;
+    if (saldoCliente == "" || saldoCliente == null) {
+        return mensajesError('#error', null, "Por favor ingrese un Saldo para el Cliente.");
     }
 
     let cliente = {
@@ -150,6 +165,23 @@ function BuscarClienteId(id) {
 function EditarCliente() {
     let IdCliente = document.getElementById("IdCliente").value;
 
+    var nombreClienteEditar = document.getElementById("NombreEditar").value;
+    if (nombreClienteEditar == "" || nombreClienteEditar == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Nombre para el Cliente Existente.");
+    }
+    var apellidoClienteEditar = document.getElementById("ApellidoEditar").value;
+    if (apellidoClienteEditar == "" || apellidoClienteEditar == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Apellido para el Cliente Existente.");
+    }
+    var dniClienteEditar = document.getElementById("DniEditar").value;
+    if (dniClienteEditar == "" || dniClienteEditar == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un DNI para el Cliente Existente.");
+    }
+    var saldoClienteEditar = document.getElementById("SaldoEditar").value;
+    if (saldoClienteEditar == "" || saldoClienteEditar == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Saldo para el Cliente Existente.");
+    }
+
     let editarClientes = {
         id: IdCliente,
         nombreCliente: document.getElementById("NombreEditar").value,
@@ -166,19 +198,18 @@ function EditarCliente() {
         body: JSON.stringify(editarClientes)
     })
     .then(data => {
-        if(data.status == undefined){
-        
             document.getElementById("IdCliente").value = 0;
             document.getElementById("NombreEditar").value = "";
             document.getElementById("ApellidoEditar").value = "";
             document.getElementById("DniEditar").value = 0;
             document.getElementById("SaldoEditar").value = 0;
+            
+            
+            $('#errorEditar').empty();
+            $('#errorEditar').attr("hidden",true);
             $('#modalEditarClientes').modal('hide');
             ObtenerClientes();
-        }
-        else {
-            mensajesError('#error', data);
-        }
+        
         })
     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
 }
@@ -187,7 +218,7 @@ function EditarCliente() {
 function mensajesError(id, data, mensaje) {
     $(id).empty();
     if (data != null) {
-        $.each(data.errors, function(index, item) {
+        $.each(data.errors, function(clientes, item) {
             $(id).append(
                 "<ol>",
                 "<li>" + item + "</li>",
