@@ -14,5 +14,7 @@ public class Context : DbContext
 
     public DbSet<Cliente> Clientes { get; set; } = null!;
 
-    public DbSet<Venta> Ventas { get; set; } = default!;
+    public DbSet<Venta> Ventas { get; set; } = null!;
+
+public DbSet<DetalleVenta> DetallesVentas { get; set; } = null!;
 }

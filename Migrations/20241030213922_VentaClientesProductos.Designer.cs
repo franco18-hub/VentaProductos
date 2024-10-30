@@ -12,7 +12,7 @@ using VentaProductos.Models;
 namespace VentaProductos.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241029001115_VentaClientesProductos")]
+    [Migration("20241030213922_VentaClientesProductos")]
     partial class VentaClientesProductos
     {
         /// <inheritdoc />
@@ -73,7 +73,7 @@ namespace VentaProductos.Migrations
 
                     b.HasIndex("VentaId");
 
-                    b.ToTable("DetalleVenta");
+                    b.ToTable("DetallesVentas");
                 });
 
             modelBuilder.Entity("VentaProductos.Models.Producto", b =>
@@ -85,6 +85,9 @@ namespace VentaProductos.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DetalleVentaId")
                         .HasColumnType("int");
 
                     b.Property<string>("NombreProducto")
@@ -99,6 +102,8 @@ namespace VentaProductos.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DetalleVentaId");
+
                     b.ToTable("Productos");
                 });
 
@@ -109,6 +114,9 @@ namespace VentaProductos.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("FechaVenta")
                         .HasColumnType("datetime2");
@@ -121,6 +129,8 @@ namespace VentaProductos.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("Ventas");
                 });
 
@@ -131,6 +141,29 @@ namespace VentaProductos.Migrations
                         .HasForeignKey("VentaId");
 
                     b.Navigation("Venta");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Producto", b =>
+                {
+                    b.HasOne("VentaProductos.Models.DetalleVenta", "DetalleVenta")
+                        .WithMany("Producto")
+                        .HasForeignKey("DetalleVentaId");
+
+                    b.Navigation("DetalleVenta");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Venta", b =>
+                {
+                    b.HasOne("VentaProductos.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.DetalleVenta", b =>
+                {
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("VentaProductos.Models.Venta", b =>

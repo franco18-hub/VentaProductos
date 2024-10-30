@@ -11,49 +11,42 @@ namespace VentaProductos.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class VentasController : ControllerBase
+    public class DetallesVentasController : ControllerBase
     {
         private readonly Context _context;
 
-        public VentasController(Context context)
+        public DetallesVentasController(Context context)
         {
             _context = context;
         }
 
-        // GET: api/Ventas
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Venta>>> GetVenta()
-        {
-            var ventas = await _context.Ventas.Include(x =>x.Cliente).ToListAsync();
-            return ventas;
-        }
 
-
-        // GET: api/Ventas/5
+        // GET: api/DetallesVentas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Venta>> GetVenta(int id)
+                public async Task<ActionResult<List<DetalleVenta>>> GetDetalleVenta(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
+            var ventasDetalle = await _context.DetallesVentas.Include(x => x.Producto)
+            .Where(x => x.IdVenta == id).ToListAsync();
 
-            if (venta == null)
+            if (ventasDetalle == null)
             {
                 return NotFound();
             }
 
-            return venta;
+            return ventasDetalle;
         }
 
-        // PUT: api/Ventas/5
+        // PUT: api/DetallesVentas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVenta(int id, Venta venta)
+        public async Task<IActionResult> PutDetalleVenta(int id, DetalleVenta detalleVenta)
         {
-            if (id != venta.Id)
+            if (id != detalleVenta.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(venta).State = EntityState.Modified;
+            _context.Entry(detalleVenta).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +54,7 @@ namespace VentaProductos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VentaExists(id))
+                if (!DetalleVentaExists(id))
                 {
                     return NotFound();
                 }
@@ -74,36 +67,36 @@ namespace VentaProductos.Controllers
             return NoContent();
         }
 
-        // POST: api/Ventas
+        // POST: api/DetallesVentas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Venta>> PostVenta(Venta venta)
+        public async Task<ActionResult<DetalleVenta>> PostDetalleVenta(DetalleVenta detalleVenta)
         {
-            _context.Ventas.Add(venta);
+            _context.DetallesVentas.Add(detalleVenta);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVenta", new { id = venta.Id }, venta);
+            return CreatedAtAction("GetDetalleVenta", new { id = detalleVenta.Id }, detalleVenta);
         }
 
-        // DELETE: api/Ventas/5
+        // DELETE: api/DetallesVentas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVenta(int id)
+        public async Task<IActionResult> DeleteDetalleVenta(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
-            if (venta == null)
+            var detalleVenta = await _context.DetallesVentas.FindAsync(id);
+            if (detalleVenta == null)
             {
                 return NotFound();
             }
 
-            _context.Ventas.Remove(venta);
+            _context.DetallesVentas.Remove(detalleVenta);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool VentaExists(int id)
+        private bool DetalleVentaExists(int id)
         {
-            return _context.Ventas.Any(e => e.Id == id);
+            return _context.DetallesVentas.Any(e => e.Id == id);
         }
     }
 }

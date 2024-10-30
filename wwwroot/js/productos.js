@@ -1,5 +1,5 @@
 function ObtenerProductos() {
-    fetch('https://localhost:7245/Productos')
+    fetch('https://localhost:7248/Productos')
     .then(response => response.json())
     .then(data => MostrarProductos(data))
     .catch(error => console.log("No se pudo acceder al servicio.", error));
@@ -93,7 +93,7 @@ function CrearProducto() {
         precioCompra: document.getElementById("PrecioCompra").value,
     };
 
-    fetch('https://localhost:7245/Productos',
+    fetch('https://localhost:7248/Productos',
         {
             method: 'POST',
             headers: {
@@ -132,7 +132,7 @@ function EliminarProducto(id) {
 }
 
 function EliminarSi(id) {
-    fetch(`https://localhost:7245/Productos/${id}`,
+    fetch(`https://localhost:7248/Productos/${id}`,
     {
         method: "DELETE"
     })
@@ -144,7 +144,7 @@ function EliminarSi(id) {
 
 
 function BuscarProductoId(id) {
-    fetch(`https://localhost:7245/Productos/${id}`,{
+    fetch(`https://localhost:7248/Productos/${id}`,{
         method: "GET"
     })
     .then(response => response.json())
@@ -190,7 +190,7 @@ function EditarProducto() {
         precioCompra: document.getElementById("PrecioCompraEditar").value
     }
 
-    fetch(`https://localhost:7245/Productos/${idProducto}`, {
+    fetch(`https://localhost:7248/Productos/${idProducto}`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'

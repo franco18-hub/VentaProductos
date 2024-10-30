@@ -1,5 +1,5 @@
 function ObtenerClientes() {
-    fetch('https://localhost:7245/Clientes')
+    fetch('https://localhost:7248/Clientes')
     .then(response => response.json())
     .then(data => MostrarClientes(data))
     .catch(error => console.log("No se pudo acceder al servicio.", error));
@@ -93,7 +93,7 @@ function CrearCliente() {
         saldo: document.getElementById("Saldo").value,
     };
 
-    fetch('https://localhost:7245/Clientes',
+    fetch('https://localhost:7248/Clientes',
         {
             method: 'POST',
             headers: {
@@ -133,7 +133,7 @@ function EliminarCliente(id) {
 }
 
 function EliminarSi(id) {
-    fetch(`https://localhost:7245/Clientes/${id}`,
+    fetch(`https://localhost:7248/Clientes/${id}`,
     {
         method: "DELETE"
     })
@@ -145,7 +145,7 @@ function EliminarSi(id) {
 
 
 function BuscarClienteId(id) {
-    fetch(`https://localhost:7245/Clientes/${id}`,{
+    fetch(`https://localhost:7248/Clientes/${id}`,{
         method: "GET"
     })
     .then(response => response.json())
@@ -190,7 +190,7 @@ function EditarCliente() {
         saldo: document.getElementById("SaldoEditar").value
     }
 
-    fetch(`https://localhost:7245/Clientes/${IdCliente}`, {
+    fetch(`https://localhost:7248/Clientes/${IdCliente}`, {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
