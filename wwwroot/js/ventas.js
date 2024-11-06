@@ -1,14 +1,16 @@
 function ObtenerVentas() {
     fetch('https://localhost:7248/Ventas')
-    .then(response => response.json())
+    .then(Result => Result.json())
     .then(data => MostrarVentas(data))
     .catch(error => console.log("No se pudo acceder al servicio.", error));
 }
+
 
 function MostrarVentas(data) {
     let tbody = document.getElementById('todaslasVentas');
     tbody.innerHTML = '';
 
+    console.log(data)
     data.forEach(element => {
         let tr = tbody.insertRow();
 
@@ -25,8 +27,8 @@ function MostrarVentas(data) {
         td2.appendChild(tdFinalizada);
 
         let td3 = tr.insertCell(3);
-        let tdIdCliente = document.createTextNode(element.idCliente);
-        td3.appendChild(tdIdCliente);
+        let tdCliente = document.createTextNode(element.clientes.nombreCliente);
+        td3.appendChild(tdCliente);
 
 //BOTONES PARA EDITAR Y BORRAR
         let btnEditar = document.createElement('button');
@@ -46,7 +48,7 @@ function MostrarVentas(data) {
         let btnVentaProductos = document.createElement('button');
         btnVentaProductos.innerText = 'Detalles';
         btnVentaProductos.setAttribute('class', 'btn btn-success');
-        btnVentaProductos.setAttribute('onclick', `BuscarDetalleProductos(${element.id})`);
+        btnVentaProductos.setAttribute('onclick', `BuscarProductosDetalle(${element.id})`);
         let td6 = tr.insertCell(6);
         td6.appendChild(btnVentaProductos);
     });
@@ -59,15 +61,15 @@ function CrearVenta() {
     }
   
   
-    var IdCliente = document.getElementById("IdCliente").value;
-    if (IdCliente == "" || IdCliente == null) {
-        return mensajesError('#error', null, "Por favor ingrese el cliente para la venta.");
-    }
+    // var IdCliente = document.getElementById("IdCliente").value;
+    // if (IdCliente == "" || IdCliente == null) {
+    //     return mensajesError('#error', null, "Por favor ingrese el cliente para la venta.");
+    // }
 
     let venta = {
         fechaVenta: document.getElementById("FechaVenta").value,
         finalizada: document.getElementById("Finalizada").checked,
-        idCliente: document.getElementById("IdCliente").value,
+        clienteId: document.getElementById("IdCliente").value,
         cliente: null ,
         detalleVenta: null
     };
@@ -130,7 +132,7 @@ function BuscarVentaId(id) {
         document.getElementById("IdVenta").value = data.id;
         document.getElementById("FechaVentaEditar").value = data.fechaVenta;
         document.getElementById("FinalizadaEditar").checked = data.finalizada;
-        document.getElementById("IdClienteEditar").value = data.idCliente;
+        document.getElementById("IdClienteEditar").value = data.clienteId;
 
         $('#modalEditarVentas').modal('show');
     })
@@ -162,8 +164,8 @@ function EditarVenta() {
     let editarVenta = {
         id: idVenta,
         fechaVenta: document.getElementById("FechaVentaEditar").value,
-        cantidad: document.getElementById("FinalizadaEditar").checked,
-        idCliente: document.getElementById("IdClienteEditar").value,
+        finalizada: document.getElementById("FinalizadaEditar").checked,
+        clienteId: document.getElementById("IdClienteEditar").value,
         cliente: null
     }
 
@@ -215,81 +217,147 @@ function mensajesError(id, data, mensaje) {
 
 // FUNCIONES PARA EL DETALLE
 
-function BuscarDetalleProductos(id){
+function BuscarProductosDetalle(id) {
     fetch(`https://localhost:7248/DetallesVentas/${id}`, {
         method: "GET"
-    }) 
+    })
         .then(response => response.json())
         .then(async data => {
-            if(data != null || data != []){
-                MostrarDetalleProductos(data);
-                await ObtenerProductosDropdown();
-                let todosProductos = localStorage.getItem('productos');
-                await FiltrarDropdownProductos (data,todosProductos);
-            }
+            MostrarProductosDetalle(data);
+            await ObtenerProductosDropdown();
+            FiltrarDropdownProductos();
             document.getElementById("IdDetalleVentas").value = id;
-            $('modalDetalleVentas').modal('show');
+            $('#modalDetalleVentas').modal('show');
         })
-        .catch(error => console.error("No se pudo acceder a la api, verifique el error", error))
+        .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error));
 }
 
-function MostrarDetalleProductos(data) {
+function MostrarProductosDetalle(data) {
+
+
     let tbody = document.getElementById('todosLosDetalles');
     tbody.innerHTML = '';
 
+    console.log(data)
     data.forEach(element => {
         let filas = tbody.insertRow();
 
         let celda0 = filas.insertCell(0);
-        let celdaProducto = document.createTextNode(element.nombreProducto);
-        celda0.appendChild(celdaProducto);
+        let celdaId = document.createTextNode(element.id);
+        celda0.appendChild(celdaId);
+
+        let celda1 = filas.insertCell(1);
+        let celdaProducto = document.createTextNode(element.productos.nombreProducto);
+        celda1.appendChild(celdaProducto);
 
         let btnModicar = document.createElement('button');
         btnModicar.innerText = 'Modificar';
         btnModicar.setAttribute('class', 'btn btn-info');
-        btnModicar.setAttribute('onclick');
-        let celda1 = filas.insertCell(1);
-        celda1.appendChild(btnModicar);
+        btnModicar.setAttribute('onclick',``);
+        let celda2 = filas.insertCell(2);
+        celda2.appendChild(btnModicar);
         
         let btnBorrar = document.createElement('button');
         btnBorrar.innerText = 'Eliminar';
         btnBorrar.setAttribute('class', 'btn btn-danger');
-        btnBorrar.setAttribute('onclick');
-        let celda2 = filas.insertCell(2);
-        celda2.appendChild(btnBorrar);
+        btnBorrar.setAttribute('onclick',`EliminarDetalleProducto(${element.id})`);
+        let celda3 = filas.insertCell(3);
+        celda3.appendChild(btnBorrar);
 
     });
 }
 
 
+
 function GuardarDetalle() {
-    let IdDetalleVenta = document.getElementById("IdDetalleVentas").value;
-
+    let idVentaDetalle = document.getElementById("IdDetalleVentas").value;
     let guardarDetalle = {
-        idProducto: document.getElementById("IdProductoDetalle").value,
+        productoId: document.getElementById("ProductosIdDetalle").value,
         producto: null,
-        idVenta: IdDetalleVenta,
-        cliente: null,
-    }
-    console.log(guardarDetalle)
-
-    fetch('https://localhost:7248/DetallesVentas',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(guardarDetalle)
-        }
-    )
+        ventaId: idVentaDetalle,
+    };
+    
+    fetch('https://localhost:7248/DetallesVentas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(guardarDetalle)
+    })
         .then(response => response.json())
         .then(() => {
-            document.getElementById("IdProductoDetalle").value = 0;
-
+            document.getElementById("ProductosIdDetalle").value = 0;
             $("#errorDetalle").empty();
             $("#errorDetalle").attr("hidden", true);
-
-            BuscarDetalleProductos(IdDetalleVenta);
+            BuscarProductosDetalle(idVentaDetalle);
         })
-        .catch(error => console.log("Hubo un error al guardar la Inscripcion, verifique el mensaje de error: ", error))
+        .catch(error => console.log("Hubo un error al guardar el detalle, verifique el mensaje de error: ", error));
 }
+
+// function BuscarVentaId(id) {
+//     fetch(`https://localhost:7248/Ventas/${id}`,{
+//         method: "GET"
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         document.getElementById("IdVenta").value = data.id;
+//         document.getElementById("FechaVentaEditar").value = data.fechaVenta;
+//         document.getElementById("FinalizadaEditar").checked = data.finalizada;
+//         document.getElementById("IdClienteEditar").value = data.clienteId;
+
+//         $('#modalEditarVentas').modal('show');
+//     })
+//     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error));
+// }
+
+
+// function EditarDetalleVenta() {
+//     let idDetalleVenta = document.getElementById("IdVenta").value;
+
+
+//     let editarDetalleVenta = {
+//         id: idDetalleVenta,
+//         fechaVenta: document.getElementById("FechaVentaEditar").value,
+//     }
+
+//     fetch(`https://localhost:7248/Ventas/${idVenta}`, {
+//         method: "PUT",
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(editarDetalleVenta)
+//     })
+//     .then(data => {
+
+//             document.getElementById("IdVenta").value = 0;
+//             document.getElementById("FechaVentaEditar").value = "";
+           
+//             $('#errorDetalleEditar').empty();
+//             $('#errorDetalleEditar').attr("hidden",true);
+//             $('#modalEditarVentas').modal('hide');
+            
+//             BuscarProductosDetalle(id);
+//     })
+//     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
+// }
+
+
+function EliminarDetalleProducto(id) {
+    var siElimina = confirm("¿Esta seguro de borrar este detalle?.")
+    if (siElimina == true) {
+        Eliminarsi(id);
+    }
+}
+
+function Eliminarsi(id) {
+    fetch(`https://localhost:7248/DetallesVentas/${id}`,
+    {
+        method: "DELETE"
+    })
+    .then(() => {
+        BuscarProductosDetalle(id);
+    })
+    .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
+}
+
+

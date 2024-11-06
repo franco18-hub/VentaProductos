@@ -15,7 +15,7 @@ function CompletarDropdown(data) {
         opt = document.createElement("option");
         opt.value = element.id;
         opt.text = element.nombreCliente
-        opt.dataset.tieneVentaActiva = element.tieneVentaActiva;
+        // opt.dataset.tieneVentaActiva = element.tieneVentaActiva;
 
         bodySelect.add(opt);
 
@@ -23,7 +23,7 @@ function CompletarDropdown(data) {
         opt2 = document.createElement("option");
         opt2.value = element.id;
         opt2.text = element.nombreCliente
-        opt2.dataset.tieneVentaActiva = element.tieneVentaActiva;
+        // opt2.dataset.tieneVentaActiva = element.tieneVentaActiva;
 
         bodySelect2.add(opt2);
     });

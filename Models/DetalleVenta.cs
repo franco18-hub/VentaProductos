@@ -5,8 +5,8 @@ namespace VentaProductos.Models;
 public class DetalleVenta
 {
     public int Id { get; set; }
-    public int IdProducto { get; set; }    
-    public ICollection <Producto>? Producto { get; set; }
-    public int IdVenta { get; set; }
-    public Venta? Venta { get; set; }
+    public int ProductoId { get; set; }    
+    public virtual Producto? Productos { get; set; }
+    public int VentaId { get; set; }
+    public virtual Venta? Ventas { get; set; }
 }

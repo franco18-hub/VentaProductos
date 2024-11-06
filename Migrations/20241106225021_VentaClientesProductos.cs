@@ -28,47 +28,6 @@ namespace VentaProductos.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ventas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FechaVenta = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Finalizada = table.Column<bool>(type: "bit", nullable: false),
-                    IdCliente = table.Column<int>(type: "int", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ventas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ventas_Clientes_ClienteId",
-                        column: x => x.ClienteId,
-                        principalTable: "Clientes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DetallesVentas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdProducto = table.Column<int>(type: "int", nullable: false),
-                    IdVenta = table.Column<int>(type: "int", nullable: false),
-                    VentaId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetallesVentas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DetallesVentas_Ventas_VentaId",
-                        column: x => x.VentaId,
-                        principalTable: "Ventas",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Productos",
                 columns: table => new
                 {
@@ -77,28 +36,69 @@ namespace VentaProductos.Migrations
                     NombreProducto = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     PrecioVenta = table.Column<float>(type: "real", nullable: false),
-                    PrecioCompra = table.Column<float>(type: "real", nullable: false),
-                    DetalleVentaId = table.Column<int>(type: "int", nullable: true)
+                    PrecioCompra = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Productos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Productos_DetallesVentas_DetalleVentaId",
-                        column: x => x.DetalleVentaId,
-                        principalTable: "DetallesVentas",
-                        principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Ventas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaVenta = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Finalizada = table.Column<bool>(type: "bit", nullable: false),
+                    ClienteId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ventas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ventas_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DetallesVentas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductoId = table.Column<int>(type: "int", nullable: false),
+                    VentaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DetallesVentas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DetallesVentas_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DetallesVentas_Ventas_VentaId",
+                        column: x => x.VentaId,
+                        principalTable: "Ventas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DetallesVentas_ProductoId",
+                table: "DetallesVentas",
+                column: "ProductoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetallesVentas_VentaId",
                 table: "DetallesVentas",
                 column: "VentaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Productos_DetalleVentaId",
-                table: "Productos",
-                column: "DetalleVentaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ventas_ClienteId",
@@ -110,10 +110,10 @@ namespace VentaProductos.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Productos");
+                name: "DetallesVentas");
 
             migrationBuilder.DropTable(
-                name: "DetallesVentas");
+                name: "Productos");
 
             migrationBuilder.DropTable(
                 name: "Ventas");

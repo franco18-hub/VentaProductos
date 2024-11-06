@@ -25,8 +25,8 @@ namespace VentaProductos.Controllers
         [HttpGet("{id}")]
                 public async Task<ActionResult<List<DetalleVenta>>> GetDetalleVenta(int id)
         {
-            var ventasDetalle = await _context.DetallesVentas.Include(x => x.Producto)
-            .Where(x => x.IdVenta == id).ToListAsync();
+            var ventasDetalle = await _context.DetallesVentas.Include(x => x.Productos)
+            .Where(x => x.VentaId == id).ToListAsync();
 
             if (ventasDetalle == null)
             {
